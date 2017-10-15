@@ -12,13 +12,14 @@ namespace glctx {
     typedef std::uint64_t NativeWindowHandle;
 
     class ContextManager {
+    protected:
+        ContextManager();
+        virtual ~ContextManager();
+
     public:
         static ContextManager* getInstance();
 
     public:
-        virtual void makeCurrent(Context* context) = 0;
-        virtual Context* getCurrent() const = 0;
-
         virtual Context* createContext(const NativeWindowHandle windowHandle, const ContextDesc &desc) = 0;
 
         virtual void destroyContext(Context *context) = 0;

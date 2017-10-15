@@ -17,6 +17,8 @@ namespace glctx {
 
         virtual ContextDesc getDesc() const override;
 
+        virtual void makeCurrent() override;
+
         virtual ~ContextWin();
 
         HGLRC getHGLRC() const;

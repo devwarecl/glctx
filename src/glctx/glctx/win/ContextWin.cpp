@@ -1,6 +1,8 @@
 
 #include "ContextWin.hpp"
 
+#include <stdexcept>
+
 namespace glctx {
 
     ContextWin::ContextWin(const HWND hWnd, const ContextDesc &desc) {
@@ -52,17 +54,24 @@ namespace glctx {
         }
     }
 
-    NativeHandle ContextWin::getHandle() const override {
+    NativeHandle ContextWin::getHandle() const {
         return reinterpret_cast<NativeHandle>(m_hRC);
     }
 
-    ContextDesc ContextWin::getDesc() const override {
+    ContextDesc ContextWin::getDesc() const {
         return m_desc;
     }
 
     ContextWin::~ContextWin() {
         ::wglDeleteContext(m_hRC);
         m_hRC = NULL;
+    }
+
+    void ContextWin::makeCurrent() {
+        if (!::wglMakeCurrent(m_hDC, m_hRC)) {
+            throw std::runtime_error("ContextWin::makeCurrent: Couldn't make the current context");
+
+        }
     }
 
     HGLRC ContextWin::getHGLRC() const {

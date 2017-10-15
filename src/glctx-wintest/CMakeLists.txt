@@ -8,4 +8,4 @@ source_group("\\glctx" FILES ${sources})
 
 add_executable (${target} ${sources})
 
-target_link_libraries(${target} glctx)
+target_link_libraries(${target} glctx opengl32)

@@ -1,10 +1,22 @@
 
 #include <Windows.h>
+#include <GL/GL.h>
 
 #include <glctx/Context.hpp>
 #include <glctx/ContextManager.hpp>
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+
+    switch (uMsg) {
+    case WM_PAINT:
+        glClearColor(0.2f, 0.3f, 0.8f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+
+        glFlush();
+        SwapBuffers(::GetDC(hWnd));
+        break;
+    }
 
     return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
@@ -49,7 +61,7 @@ int main() {
     glctx::ContextManager *contextManager = glctx::ContextManager::getInstance();
     glctx::Context *context = contextManager->createContext(handle, desc);
 
-    contextManager->makeCurrent(context);
+    context->makeCurrent();
 
     MSG msg = {};
 
