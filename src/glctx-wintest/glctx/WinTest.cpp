@@ -1,6 +1,7 @@
 
 #include <Windows.h>
 
+#include <glctx/Context.hpp>
 #include <glctx/ContextManager.hpp>
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
@@ -36,12 +37,28 @@ int main() {
     ::ShowWindow(hWnd, SW_SHOW);
     ::UpdateWindow(hWnd);
 
+    // at this point, create the opengl context
+    const glctx::NativeWindowHandle handle = reinterpret_cast<glctx::NativeWindowHandle>(hWnd);
+    const glctx::ContextDesc desc = {
+        3, 3, 
+        false, 
+        true, 
+        8, 8, 8, 0
+    };
+    
+    glctx::ContextManager *contextManager = glctx::ContextManager::getInstance();
+    glctx::Context *context = contextManager->createContext(handle, desc);
+
+    contextManager->makeCurrent(context);
+
     MSG msg = {};
 
     while(GetMessage(&msg, NULL, 0, 0)) {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
+
+    contextManager->destroyContext(context);
 
     ::DestroyWindow(hWnd);
     ::UnregisterClass(CLASS_NAME, hInstance);

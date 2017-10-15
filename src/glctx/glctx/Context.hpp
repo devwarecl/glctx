@@ -35,6 +35,8 @@ namespace glctx {
         virtual ContextDesc getDesc() const = 0;
 
         virtual NativeHandle getHandle() const = 0;
+
+        virtual void makeCurrent() = 0;
     };
 }
 
