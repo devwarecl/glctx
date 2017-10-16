@@ -73,6 +73,10 @@ namespace glctx {
         }
     }
 
+    void ContextWin::swapBuffers() {
+        ::SwapBuffers(m_hDC);
+    }
+
     HGLRC ContextWin::getHGLRC() const {
         return m_hRC;
     }

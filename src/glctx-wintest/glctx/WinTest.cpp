@@ -5,6 +5,8 @@
 #include <glctx/Context.hpp>
 #include <glctx/ContextManager.hpp>
 
+#include "TestScene.hpp"
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     switch (uMsg) {
     case WM_CLOSE:
@@ -55,8 +57,9 @@ int main() {
     
     glctx::ContextManager *contextManager = glctx::ContextManager::getInstance();
     glctx::Context *context = contextManager->createContext(handle, desc);
-
     context->makeCurrent();
+
+    auto scene = glctx::TestScene::New();
 
     MSG msg = {};
 
@@ -71,25 +74,12 @@ int main() {
                 ::DispatchMessage(&msg);
             }
         } else {
-            HDC hDC = ::GetDC(hWnd);
-            glClearColor(0.2f, 0.3f, 0.8f, 1.0f);
-            glClear(GL_COLOR_BUFFER_BIT);
-
-            glBegin(GL_TRIANGLES);
-            glVertex3f(0.0f, 1.0f, 0.0f);
-            glVertex3f(1.0f, -1.0f, 0.0f);
-            glVertex3f(-1.0f, -1.0f, 0.0f);
-            glEnd();
-
-            glFlush();
-            SwapBuffers(hDC);
+            scene->render();
+            context->swapBuffers();
         }
     }
 
-    while(GetMessage(&msg, NULL, 0, 0)) {
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
-    }
+    scene.release();
 
     contextManager->destroyContext(context);
 

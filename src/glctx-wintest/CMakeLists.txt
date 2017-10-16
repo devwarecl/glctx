@@ -1,6 +1,10 @@
 
 set (target "glctx-wintest")
-set (sources "glctx/WinTest.cpp")
+set (sources 
+	"glctx/WinTest.cpp"
+	"glctx/TestScene.hpp"
+	"glctx/TestScene.cpp"
+)
 
 include_directories(".")
 
