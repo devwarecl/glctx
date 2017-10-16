@@ -23,9 +23,10 @@ namespace glctx {
 
         virtual ~ContextWin();
 
-        HGLRC getHGLRC() const;
+    private:
+        void setupCompatContext(const ContextDesc &desc);
 
-        HDC getHDC() const;
+        void setupCoreContext(const ContextDesc &desc);
 
     private:
         HWND m_hWnd = NULL;

@@ -1,10 +1,8 @@
 
 #include "ContextWin.hpp"
-
 #include <stdexcept>
 
 namespace glctx {
-
     ContextWin::ContextWin(const HWND hWnd, const ContextDesc &desc) {
         // sanity validations
         if (! ::IsWindow(hWnd)) {
@@ -16,42 +14,55 @@ namespace glctx {
         }
 
         // prepare the context
-        HDC hDC = ::GetDC(hWnd);
+        m_hWnd = hWnd;
+        m_hDC = ::GetDC(hWnd);
 
+        if (desc.compatibility) {
+            this->setupCompatContext(desc);
+        } else {
+            this->setupCoreContext(desc);
+        }
+    }
+
+    void ContextWin::setupCompatContext(const ContextDesc &desc) {
         PIXELFORMATDESCRIPTOR pfd = {
             sizeof(PIXELFORMATDESCRIPTOR),
 	        1,
-	        PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,    //Flags
-	        PFD_TYPE_RGBA,            //The kind of framebuffer. RGBA or palette.
-	        32,                        //Colordepth of the framebuffer.
+	        PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,    
+	        PFD_TYPE_RGBA,          //The kind of framebuffer. RGBA or palette.
+	        32,                     //Colordepth of the framebuffer.
 	        0, 0, 0, 0, 0, 0,
 	        0,
 	        0,
 	        0,
 	        0, 0, 0, 0,
-	        24,                        //Number of bits for the depthbuffer
-	        8,                        //Number of bits for the stencilbuffer
-	        0,                        //Number of Aux buffers in the framebuffer.
+	        24,                     //Number of bits for the depthbuffer
+	        8,                      //Number of bits for the stencilbuffer
+	        0,                      //Number of Aux buffers in the framebuffer.
 	        PFD_MAIN_PLANE,
 	        0,
 	        0, 0, 0
         };
 
-        int pixelFormat = ::ChoosePixelFormat(hDC, &pfd);
+        int pixelFormat = ::ChoosePixelFormat(m_hDC, &pfd);
         if (!pixelFormat) {
             throw std::runtime_error("Couldn't find a Pixel Format with the specified parameters");
         }
 
-        if (!::SetPixelFormat(hDC, pixelFormat, &pfd)) {
+        if (!::SetPixelFormat(m_hDC, pixelFormat, &pfd)) {
             throw std::runtime_error("Couldn't set the Pixel Format to the DC");
         }
 
-        m_hDC = hDC;
-        m_hRC = ::wglCreateContext(hDC);
+        m_hRC = ::wglCreateContext(m_hDC);
 
         if (!m_hRC) {
             throw std::runtime_error("Couldn't set the Pixel Format to the DC");
         }
+    }
+
+    void ContextWin::setupCoreContext(const ContextDesc &desc) {
+        this->setupCompatContext(desc);
+        this->makeCurrent();
     }
 
     NativeHandle ContextWin::getHandle() const {
@@ -75,13 +86,5 @@ namespace glctx {
 
     void ContextWin::swapBuffers() {
         ::SwapBuffers(m_hDC);
-    }
-
-    HGLRC ContextWin::getHGLRC() const {
-        return m_hRC;
-    }
-
-    HDC ContextWin::getHDC() const {
-        return m_hDC;
     }
 }

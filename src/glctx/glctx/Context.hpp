@@ -23,6 +23,8 @@ namespace glctx {
         std::uint8_t greenBits = 0;
         std::uint8_t blueBits = 0;
         std::uint8_t alphaBits = 0;
+
+        std::uint8_t depthBits = 0;
     };
 
     /**
