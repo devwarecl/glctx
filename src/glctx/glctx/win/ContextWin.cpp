@@ -70,7 +70,6 @@ namespace glctx {
     void ContextWin::makeCurrent() {
         if (!::wglMakeCurrent(m_hDC, m_hRC)) {
             throw std::runtime_error("ContextWin::makeCurrent: Couldn't make the current context");
-
         }
     }
 

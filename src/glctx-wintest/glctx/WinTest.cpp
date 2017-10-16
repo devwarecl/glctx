@@ -6,16 +6,10 @@
 #include <glctx/ContextManager.hpp>
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-
     switch (uMsg) {
-    case WM_PAINT:
-        glClearColor(0.2f, 0.3f, 0.8f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-
-
-        glFlush();
-        SwapBuffers(::GetDC(hWnd));
-        break;
+    case WM_CLOSE:
+        ::PostMessage(hWnd, 0, 0, WM_QUIT);
+        return 0;
     }
 
     return DefWindowProc(hWnd, uMsg, wParam, lParam);
@@ -29,6 +23,7 @@ int main() {
 
     WNDCLASS wc = {};
 
+    wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
     wc.hCursor = ::LoadCursor(NULL, IDC_ARROW);
     wc.hIcon = ::LoadIcon(NULL, IDI_APPLICATION);
     wc.hInstance = hInstance;
@@ -64,6 +59,32 @@ int main() {
     context->makeCurrent();
 
     MSG msg = {};
+
+    bool running = true;
+
+    while (running) {
+        if (::PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
+            if (msg.message == WM_QUIT) {
+                running = false;
+            } else {
+                ::TranslateMessage(&msg);
+                ::DispatchMessage(&msg);
+            }
+        } else {
+            HDC hDC = ::GetDC(hWnd);
+            glClearColor(0.2f, 0.3f, 0.8f, 1.0f);
+            glClear(GL_COLOR_BUFFER_BIT);
+
+            glBegin(GL_TRIANGLES);
+            glVertex3f(0.0f, 1.0f, 0.0f);
+            glVertex3f(1.0f, -1.0f, 0.0f);
+            glVertex3f(-1.0f, -1.0f, 0.0f);
+            glEnd();
+
+            glFlush();
+            SwapBuffers(hDC);
+        }
+    }
 
     while(GetMessage(&msg, NULL, 0, 0)) {
         TranslateMessage(&msg);
