@@ -4,6 +4,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <glctx/PreDef.hpp>
 
 namespace glctx {
     struct ContextDesc;
@@ -11,7 +12,7 @@ namespace glctx {
     
     typedef std::uint64_t NativeWindowHandle;
 
-    class ContextManager {
+    class GLCTX_API ContextManager {
     protected:
         ContextManager();
         virtual ~ContextManager();

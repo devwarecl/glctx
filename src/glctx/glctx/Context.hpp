@@ -3,6 +3,7 @@
 #define __glctx_context_hpp__
 
 #include <cstdint>
+#include <glctx/PreDef.hpp>
 
 namespace glctx {
     typedef std::uint64_t NativeHandle;
@@ -30,7 +31,7 @@ namespace glctx {
     /**
      * @brief An Graphics Library Context
      */
-    class Context {
+    class GLCTX_API Context {
     public:
         virtual ~Context();
 
