@@ -1,6 +1,9 @@
+
 cmake_minimum_required(VERSION 3.0)
 
 project (glctx)
+
+option (GLCTX_TEST_PROGRAM "Include test program in the compilation process" OFF)
 
 set (GLCTX_VERSION_MAJOR "0")
 set (GLCTX_VERSION_MINOR "1")
@@ -12,4 +15,7 @@ add_definitions("-DGLCTX_VERSION_REVISION=${GLCTX_VERSION_REVISION}")
 
 include_directories("src/glctx")
 add_subdirectory ("src/glctx")
-add_subdirectory ("src/glctx-wintest")
+
+if (GLCTX_TEST_PROGRAM)
+    add_subdirectory ("src/glctx-wintest")
+endif ()
