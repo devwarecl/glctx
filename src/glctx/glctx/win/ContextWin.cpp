@@ -1,6 +1,19 @@
 
 #include "ContextWin.hpp"
 #include <stdexcept>
+#include <iostream>
+
+#define WGL_CONTEXT_MAJOR_VERSION_ARB           0x2091
+#define WGL_CONTEXT_MINOR_VERSION_ARB           0x2092
+#define WGL_CONTEXT_LAYER_PLANE_ARB             0x2093
+#define WGL_CONTEXT_FLAGS_ARB                   0x2094
+#define WGL_CONTEXT_PROFILE_MASK_ARB            0x9126
+
+#define WGL_CONTEXT_DEBUG_BIT_ARB               0x0001
+#define WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB  0x0002
+
+#define WGL_CONTEXT_CORE_PROFILE_BIT_ARB        0x00000001
+#define WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB 0x00000002
 
 namespace glctx {
     ContextWin::ContextWin(const HWND hWnd, const ContextDesc &desc) {
@@ -63,6 +76,35 @@ namespace glctx {
     void ContextWin::setupCoreContext(const ContextDesc &desc) {
         this->setupCompatContext(desc);
         this->makeCurrent();
+
+        // I have a current context
+        typedef HGLRC (*wglCreateContextAttribsARB_proc)(HDC, HGLRC, const int *);
+
+        wglCreateContextAttribsARB_proc wglCreateContextAttribsARB;
+
+        wglCreateContextAttribsARB = (wglCreateContextAttribsARB_proc)::wglGetProcAddress("wglCreateContextAttribsARB");
+        if (!wglCreateContextAttribsARB) {
+            throw std::runtime_error("Couldn't create a Core Profile context (missing wglCreateContextAttribsARB entry point)");
+        }
+
+        int contextAttribs[] = {
+            WGL_CONTEXT_MAJOR_VERSION_ARB, desc.versionMajor,
+            WGL_CONTEXT_MINOR_VERSION_ARB, desc.versionMinor,
+            WGL_CONTEXT_PROFILE_MASK_ARB,
+            WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
+            WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB,
+            0
+        };
+
+        HGLRC coreProfileContext = wglCreateContextAttribsARB(m_hDC, m_hRC, contextAttribs);
+        if (!coreProfileContext) {
+            throw std::runtime_error("Couldn't create a core context profile");
+        }
+
+        ::wglMakeCurrent(NULL, NULL);
+        ::wglDeleteContext(m_hRC);
+
+        m_hRC = coreProfileContext;
     }
 
     NativeHandle ContextWin::getHandle() const {
