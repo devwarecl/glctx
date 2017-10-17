@@ -16,14 +16,11 @@ namespace glctx {
             glClearColor(0.2f, 0.3f, 0.8f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
 
-            glBegin(GL_TRIANGLES);
-            glVertex3f(0.0f, 1.0f, 0.0f);
-            glVertex3f(1.0f, -1.0f, 0.0f);
-            glVertex3f(-1.0f, -1.0f, 0.0f);
-            glEnd();
-
             glFlush();
         }
+
+    private:
+
     };
 
     std::unique_ptr<TestScene> TestScene::New() {
