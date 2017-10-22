@@ -7,7 +7,7 @@ option (GLCTX_TEST_PROGRAM "Include test program in the compilation process" OFF
 option (GLCTX_DYNAMIC "Build the DLL version of the library" OFF)
 
 set (GLCTX_VERSION_MAJOR "0")
-set (GLCTX_VERSION_MINOR "2")
+set (GLCTX_VERSION_MINOR "3")
 set (GLCTX_VERSION_REVISION "0")
 
 if (GLCTX_DYNAMIC)

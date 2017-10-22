@@ -9,23 +9,32 @@ namespace glctx {
     typedef std::uint64_t NativeHandle;
 
     struct ContextDesc {
-        // OpenGL Version
-        std::uint8_t versionMajor = 0;
-        std::uint8_t versionMinor = 0;
+        struct {
+            std::uint8_t major = 0;
+            std::uint8_t minor = 0;
+        } version;
 
-        // compability profile flag
-        bool compatibility = false;
+        struct {
+            std::uint8_t redBits = 0;
+            std::uint8_t greenBits = 0;
+            std::uint8_t blueBits = 0;
+            std::uint8_t alphaBits = 0;
+            std::uint8_t depthBits = 0;
+            std::uint8_t stencilBits = 0;
+        } framebuffer;
 
-        // double buffer?
-        bool doubleBuffer = false;
+        struct {
+            bool compatibility = false;
+            bool doubleBuffer = false;
+        } flags;
 
-        // framebuffer format
-        std::uint8_t redBits = 0;
-        std::uint8_t greenBits = 0;
-        std::uint8_t blueBits = 0;
-        std::uint8_t alphaBits = 0;
-
-        std::uint8_t depthBits = 0;
+        static ContextDesc createCoreProfile() {
+            return {
+                {3, 3}, 
+                {8, 8, 8, 8, 24, 8}, 
+                {false, true}
+            };
+        }
     };
 
     /**

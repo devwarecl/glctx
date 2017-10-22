@@ -30,7 +30,7 @@ namespace glctx {
         m_hWnd = hWnd;
         m_hDC = ::GetDC(hWnd);
 
-        if (desc.compatibility) {
+        if (desc.flags.compatibility) {
             this->setupCompatContext(desc);
         } else {
             this->setupCoreContext(desc);
@@ -38,19 +38,24 @@ namespace glctx {
     }
 
     void ContextWin::setupCompatContext(const ContextDesc &desc) {
+        const DWORD doubleBuffer = desc.flags.doubleBuffer?PFD_DOUBLEBUFFER:0;
+        const BYTE colorBits = desc.framebuffer.redBits + desc.framebuffer.greenBits + desc.framebuffer.blueBits + desc.framebuffer.alphaBits;
+        const BYTE depthBits = desc.framebuffer.depthBits;
+        const BYTE stencilBits = desc.framebuffer.stencilBits;
+
         PIXELFORMATDESCRIPTOR pfd = {
             sizeof(PIXELFORMATDESCRIPTOR),
 	        1,
-	        PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,    
+	        PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | doubleBuffer,    
 	        PFD_TYPE_RGBA,          //The kind of framebuffer. RGBA or palette.
-	        32,                     //Colordepth of the framebuffer.
+	        colorBits,              //Colordepth of the framebuffer.
 	        0, 0, 0, 0, 0, 0,
 	        0,
 	        0,
 	        0,
 	        0, 0, 0, 0,
-	        24,                     //Number of bits for the depthbuffer
-	        8,                      //Number of bits for the stencilbuffer
+	        depthBits,              //Number of bits for the depthbuffer
+	        stencilBits,            //Number of bits for the stencilbuffer
 	        0,                      //Number of Aux buffers in the framebuffer.
 	        PFD_MAIN_PLANE,
 	        0,
@@ -88,8 +93,8 @@ namespace glctx {
         }
 
         int contextAttribs[] = {
-            WGL_CONTEXT_MAJOR_VERSION_ARB, desc.versionMajor,
-            WGL_CONTEXT_MINOR_VERSION_ARB, desc.versionMinor,
+            WGL_CONTEXT_MAJOR_VERSION_ARB, desc.version.major,
+            WGL_CONTEXT_MINOR_VERSION_ARB, desc.version.minor,
             WGL_CONTEXT_PROFILE_MASK_ARB,
             WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
             WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB,
@@ -105,6 +110,7 @@ namespace glctx {
         ::wglDeleteContext(m_hRC);
 
         m_hRC = coreProfileContext;
+        m_desc = desc;
     }
 
     NativeHandle ContextWin::getHandle() const {
@@ -127,6 +133,8 @@ namespace glctx {
     }
 
     void ContextWin::swapBuffers() {
-        ::SwapBuffers(m_hDC);
+        if (m_desc.flags.doubleBuffer) {
+            ::SwapBuffers(m_hDC);
+        }
     }
 }
