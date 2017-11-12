@@ -39,7 +39,7 @@ set_target_properties (
 install (TARGETS ${target} DESTINATION "lib")
 
 install (
-	DIRECTORY "${CMAKE_SOURCE_DIR}/src/${target}/glctx"
+	DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/glctx"
 	DESTINATION "include"
 	FILES_MATCHING PATTERN "*.hpp"
 )
